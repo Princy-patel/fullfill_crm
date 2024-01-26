@@ -1,11 +1,12 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useContext, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import SnackbarContext from "./Store/SnackbarContext";
+import SnackbarComponent from "./SnackbarComponent";
 
 const initialValue = {
   isAuthentication: "WAITING",
@@ -47,6 +48,8 @@ function ProtectedRoute(props) {
   const [authentication, dispatch] = useReducer(reducer, initialValue);
   const navigate = useNavigate();
 
+  // const { snack, setSnack } = useContext(SnackbarContext);
+
   const handleClick = () => {
     if (authentication.isAuthentication !== "WAITING") {
       dispatch({ type: "OPEN_SNACKBAR" });
@@ -61,33 +64,22 @@ function ProtectedRoute(props) {
     dispatch({ type: "CLOSE_SNACKBAR" });
   };
 
-  const action = (
-    <React.Fragment>
-      <Button color="secondary" size="small" onClick={handleClose}>
-        UNDO
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handleClose}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </React.Fragment>
-  );
-
   const getData = JSON.parse(localStorage.getItem("loginInfo"));
   useEffect(() => {
     try {
       if (getData) {
         if (!getData.token) {
-          handleClick();
-          dispatch({
-            type: "FAILED_MESSAGE",
-            payload: "Login Failed",
-          });
+          // handleClick();
           navigate("/login");
+          <SnackbarComponent />;
+          // dispatch({
+          //   type: "FAILED_MESSAGE",
+          //   payload: "Login Failed",
+          // }); // dispatch({
+          //   type: "FAILED_MESSAGE",
+          //   payload: "Login Failed",
+          // });
+        
         } else {
           handleClick();
           dispatch({
@@ -97,12 +89,13 @@ function ProtectedRoute(props) {
           dispatch({ type: "SET_DATA" });
         }
       } else {
-        handleClick();
-        dispatch({
-          type: "FAILED_MESSAGE",
-          payload: "Login Failed",
-        });
         navigate("/login");
+
+        <SnackbarComponent />;
+        // dispatch({
+        //   type: "FAILED_MESSAGE",
+        //   payload: "Login Failed",
+        // });
       }
     } catch (error) {
       console.log(error);
@@ -115,18 +108,6 @@ function ProtectedRoute(props) {
   if (authentication.isAuthentication === "Logged-in") {
     return props.children;
   }
-
-  return (
-    <>
-      <Snackbar
-        open={authentication.isSnackbar}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message={authentication.snackbarMessage}
-        action={action}
-      />
-    </>
-  );
 }
 
 export default ProtectedRoute;

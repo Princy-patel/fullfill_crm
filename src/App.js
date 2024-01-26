@@ -5,7 +5,10 @@ import Dashboard from "./Components/Pages/Dashboard";
 import Base from "./Components/Common/Base";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import Enquiries from "./Components/Pages/Enquiries";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import { useState } from "react";
+import SnackbarContext from "./Components/Store/SnackbarContext";
+import SnackbarComponent from "./Components/SnackbarComponent";
 
 const router = createBrowserRouter([
   {
@@ -33,11 +36,16 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const [snack, setSnack] = useState({
+    message: "",
+    open: false,
+  });
   return (
     <>
-    <ToastContainer/>
-
-      <RouterProvider router={router} />
+      <SnackbarContext.Provider value={{ snack, setSnack }}>
+          <ToastContainer />
+          <RouterProvider router={router} />
+      </SnackbarContext.Provider>
     </>
   );
 }
