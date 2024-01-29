@@ -19,6 +19,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import Collapse from "@mui/material/Collapse";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import { Link } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -58,6 +59,7 @@ export default function Sidebar() {
     { icon: <SchoolOutlinedIcon />, text: "Search University" },
     { icon: <HelpOutlineOutlinedIcon />, text: "Help" },
   ];
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <CssBaseline />
@@ -101,17 +103,20 @@ export default function Sidebar() {
           <Collapse in={openMenu.enquiries} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText primary="All Enquiries" className="pl-3.5" />
+                <Link to="/enquiries">
+                  <ListItemText primary="All Enquiries" className="pl-3.5" />
+                </Link>
               </ListItemButton>
               <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText primary="Create Enquiries" className="pl-3.5" />
+                <Link to="/add-enquiries">
+                  <ListItemText primary="Create Enquiries" className="pl-3.5" />
+                </Link>
               </ListItemButton>
             </List>
           </Collapse>
 
           <Divider sx={{ my: 1 }} />
 
-          {/* {secondaryListItems} */}
           <Box
             component="div"
             className="flex justify-center items-center font-bold mb-2.5"

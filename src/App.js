@@ -8,15 +8,18 @@ import Enquiries from "./Components/Pages/Enquiries";
 import { ToastContainer } from "react-toastify";
 import { useState } from "react";
 import SnackbarContext from "./Components/Store/SnackbarContext";
-import SnackbarComponent from "./Components/SnackbarComponent";
+import AddEnquiry from "./Components/Pages/AddEnquiry";
+import DataProvider from "./Components/DataProvider";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <ProtectedRoute>
-        <Base />
-      </ProtectedRoute>
+      <DataProvider>
+        <ProtectedRoute>
+          <Base />
+        </ProtectedRoute>
+      </DataProvider>
     ),
     children: [
       {
@@ -27,6 +30,10 @@ const router = createBrowserRouter([
         path: "/enquiries",
         element: <Enquiries />,
       },
+      {
+        path: "/add-enquiries",
+        element: <AddEnquiry />,
+      },
     ],
   },
   {
@@ -36,17 +43,12 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [snack, setSnack] = useState({
-    message: "",
-    open: false,
-  });
   return (
-    <>
-      <SnackbarContext.Provider value={{ snack, setSnack }}>
-          <ToastContainer />
-          <RouterProvider router={router} />
-      </SnackbarContext.Provider>
-    </>
+    <div className="flex">
+      {/* <SnackbarContext.Provider> */}
+        <RouterProvider router={router} />
+      {/* </SnackbarContext.Provider> */}
+    </div>
   );
 }
 

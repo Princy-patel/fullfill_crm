@@ -5,11 +5,12 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import SnackbarContext from "./Store/SnackbarContext";
 
-function SnackbarComponent() {
-  const { snack, setSnack } = useContext(SnackbarContext);
+function SnackbarComponent({ initialValue }) {
+  console.log(initialValue)
+  // const { snack, setSnack } = useContext(SnackbarContext);
 
-  console.log(snack);
-  
+  // console.log(snack);
+
   const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
@@ -42,7 +43,6 @@ function SnackbarComponent() {
 
   return (
     <div>
-      {" "}
       <Button onClick={handleClick}>Open Snackbar</Button>
       <Snackbar
         open={open}
