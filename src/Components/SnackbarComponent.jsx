@@ -3,38 +3,25 @@ import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import SnackbarContext from "./Store/SnackbarContext";
+import SnackbarContext from "../Store/SnackbarContext";
 
-function SnackbarComponent({ initialValue }) {
-  console.log(initialValue)
-  // const { snack, setSnack } = useContext(SnackbarContext);
-
-  // console.log(snack);
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
+function SnackbarComponent() {
+  const { snack, setSnack } = useContext(SnackbarContext);
 
   const action = (
     <React.Fragment>
-      <Button color="secondary" size="small" onClick={handleClose}>
+      <Button
+        color="secondary"
+        size="small"
+        onClick={() => setSnack({ ...snack, open: false })}
+      >
         UNDO
       </Button>
       <IconButton
         size="small"
         aria-label="close"
         color="inherit"
-        onClick={handleClose}
+        onClick={() => setSnack({ ...snack, open: false })}
       >
         <CloseIcon fontSize="small" />
       </IconButton>
@@ -43,12 +30,11 @@ function SnackbarComponent({ initialValue }) {
 
   return (
     <div>
-      <Button onClick={handleClick}>Open Snackbar</Button>
       <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message="Note archived"
+        open={snack.open}
+        autoHideDuration={2000}
+        onClose={() => setSnack({ ...snack, open: false })}
+        message={snack.message}
         action={action}
       />
     </div>

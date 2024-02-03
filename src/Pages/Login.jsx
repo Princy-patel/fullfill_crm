@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useContext, useReducer } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,6 +13,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import SnackbarContext from "../Store/SnackbarContext";
 
 function Copyright(props) {
   return (
@@ -60,11 +61,11 @@ const reducer = function (state, action) {
 
 export default function Login() {
   const [formData, dispatch] = useReducer(reducer, initialData);
+  const { setSnack } = useContext(SnackbarContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    dispatch({ type: "SUBMIT_FORM" });
     // dispatch({ type: "DISABLE_BUTTON", payload: true });
 
     const reqBody = {
@@ -85,14 +86,31 @@ export default function Login() {
         }
       );
 
-      const loginData = await requestData.json();
+      let loginData = await requestData.json();
       localStorage.setItem("loginInfo", JSON.stringify(loginData));
-      navigate("/");
     } else {
-      alert("Please fiill the fom");
-
+      setSnack({ open: true, message: "Please fill the form" });
+      return;
       // dispatch({ type: "ENABLE_BUTTON", payload: false });
     }
+
+    let loginInfo = localStorage.getItem("loginInfo");
+    if (loginInfo) loginInfo = JSON.parse(loginInfo);
+
+    if (!loginInfo.msg) {
+      setSnack({
+        open: true,
+        message: "Please check login details and try again",
+      });
+      return;
+    }
+
+    dispatch({ type: "SUBMIT_FORM" });
+    setSnack({
+      open: true,
+      message: "Login Successful",
+    });
+    navigate("/");
   };
 
   return (

@@ -1,25 +1,22 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
-import Login from "./Components/Pages/Login";
-import Dashboard from "./Components/Pages/Dashboard";
+import Login from "./Pages/Login";
+import Dashboard from "./Pages/Dashboard";
 import Base from "./Common/Base";
 import ProtectedRoute from "./Components/ProtectedRoute";
-import Enquiries from "./Components/Pages/Enquiries";
-import { ToastContainer } from "react-toastify";
+import Enquiries from "./Pages/Enquiries";
 import { useState } from "react";
-import SnackbarContext from "./Components/Store/SnackbarContext";
-import AddEnquiry from "./Components/Pages/AddEnquiry";
-import DataProvider from "./Components/DataProvider";
+import SnackbarContext from "./Store/SnackbarContext";
+import AddEnquiry from "./Pages/AddEnquiry";
+import SnackbarComponent from "./Components/SnackbarComponent";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <DataProvider>
-        <ProtectedRoute>
-          <Base />
-        </ProtectedRoute>
-      </DataProvider>
+      <ProtectedRoute>
+        <Base />
+      </ProtectedRoute>
     ),
     children: [
       {
@@ -43,11 +40,17 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const [snack, setSnack] = useState({
+    open: false,
+    message: "",
+  });
+
   return (
     <div className="flex">
-      {/* <SnackbarContext.Provider> */}
+      <SnackbarContext.Provider value={{ snack, setSnack }}>
         <RouterProvider router={router} />
-      {/* </SnackbarContext.Provider> */}
+        <SnackbarComponent />
+      </SnackbarContext.Provider>
     </div>
   );
 }
