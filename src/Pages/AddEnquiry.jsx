@@ -1,15 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import DataContext from "../Store/DataContext";
 
 function AddEnquiry() {
-  const { response } = useContext(DataContext);
-  const [selected, setSelected] = useState([]);
-
   const [formValue, setFormValue] = useState({
-    name: "sad",
-    phone: "sadsa",
-    email: "sadas",
-    address: "sads",
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
     country: "",
     state: "",
     city: "",
@@ -18,35 +14,14 @@ function AddEnquiry() {
     nationality: "",
     married: false,
     birthDate: "",
-    education: "",
+    current_education: "",
     countryInterested: "",
     visa: "",
-    documents: "",
+    // documents: "",
   });
 
-  // console.log(response.token.access);
-
-  const loadData = async function () {
-    const requestEnq = await fetch(
-      "https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/",
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${response.token.access}`,
-        },
-      }
-    );
-
-    const responseEnq = await requestEnq.json();
-
-    console.log(responseEnq.results);
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  let localData = localStorage.getItem("loginInfo");
+  if (localData) localData = JSON.parse(localData);
 
   const handleSubmit = async function (e) {
     e.preventDefault();
@@ -66,7 +41,7 @@ function AddEnquiry() {
       current_education: formValue.education,
       country_interested: formValue.countryInterested,
       visa_refusal: formValue.visa,
-      visa_file: formValue.documents,
+      // visa_file: formValue.documents,
     };
 
     console.log(reqBody);
@@ -80,13 +55,14 @@ function AddEnquiry() {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${response.token.access}`,
+            Authorization: `Bearer ${localData.token.access}`,
           },
         }
       );
 
       const responseData = await req.json();
-      console.log(responseData);
+
+      console.log("response", responseData);
     } catch (error) {
       console.log(error);
     }
@@ -237,23 +213,30 @@ function AddEnquiry() {
 
             <div className="sm:col-span-4">
               <label
-                htmlFor="education"
+                htmlFor="current_education"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Current Education
               </label>
               <div className="mt-2">
-                <input
-                  type="text"
-                  name="education"
-                  id="education"
-                  autoComplete="address-level2"
-                  value={formValue.education}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                <select
+                  id="current_education"
+                  name="current_education"
+                  autoComplete="current_education"
+                  value={formValue.current_education}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   onChange={(e) =>
-                    setFormValue({ ...formValue, education: e.target.value })
+                    setFormValue({
+                      ...formValue,
+                      current_education: e.target.value,
+                    })
                   }
-                />
+                >
+                  <option value="">Select Country</option>
+                  <option value="1">B.com</option>
+                  <option value="2">M.com</option>
+                  {/* Add more countries as needed */}
+                </select>
               </div>
             </div>
 
@@ -428,24 +411,29 @@ function AddEnquiry() {
                 Country Interested
               </label>
               <div className="mt-2">
-                <input
-                  type="text"
-                  name="country-interested"
+                <select
                   id="country-interested"
-                  autoComplete="address-level2"
-                  value={null}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  name="country-interested"
+                  autoComplete="country-interested"
+                  value={formValue.countryInterested}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   onChange={(e) =>
                     setFormValue({
                       ...formValue,
                       countryInterested: e.target.value,
                     })
                   }
-                />
+                >
+                  <option value="">Select Country</option>
+                  <option value="1">Canada</option>
+                  <option value="2">UK</option>
+                  <option value="2">US</option>
+                  {/* Add more countries as needed */}
+                </select>
               </div>
             </div>
 
-            <div className="sm:col-span-4">
+            {/* <div className="sm:col-span-4">
               <label
                 htmlFor="documents"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -465,7 +453,7 @@ function AddEnquiry() {
                   }
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
