@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Country, State, City } from "country-state-city";
 
 function AddEnquiry() {
   const [formValue, setFormValue] = useState({
@@ -22,6 +23,22 @@ function AddEnquiry() {
 
   let localData = localStorage.getItem("loginInfo");
   if (localData) localData = JSON.parse(localData);
+
+  // get all country data
+  const countryData = Country.getAllCountries();
+
+  // get all state data
+  const stateData = State.getAllStates();
+
+  const [stateValue, setStateValue] = useState(stateData);
+
+  const handleCountryData = function (e) {
+    setFormValue({ ...formValue, country: e.target.value });
+    const filteredState = stateData.filter(
+      (data) => data.isoCode === e.target.value
+    );
+    setStateValue(filteredState);
+  };
 
   const handleSubmit = async function (e) {
     e.preventDefault();
@@ -134,13 +151,14 @@ function AddEnquiry() {
                   autoComplete="country-name"
                   value={formValue.country}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                  onChange={(e) =>
-                    setFormValue({ ...formValue, country: e.target.value })
-                  }
+                  onChange={handleCountryData}
                 >
-                  <option>United States</option>
-                  <option>Canada</option>
-                  <option>Mexico</option>
+                  <option>Select Country</option>
+                  {countryData.map((country, index) => (
+                    <option key={index} value={country.isoCode}>
+                      {country.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -328,9 +346,12 @@ function AddEnquiry() {
                     setFormValue({ ...formValue, state: e.target.value })
                   }
                 >
-                  <option>United States</option>
-                  <option>Canada</option>
-                  <option>Mexico</option>
+                  <option>Select State</option>
+                  {stateValue.map((data, index) => (
+                    <option key={index} value={data.isoCode}>
+                      {data.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
