@@ -19,7 +19,7 @@ function SearchField({ setSearchInput, searchInput }) {
           label="Search"
           variant="outlined"
           onChange={setSearchInput}
-          // value={searchInput}
+          value={searchInput}
           InputProps={{
             startAdornment: <SearchIcon />,
           }}

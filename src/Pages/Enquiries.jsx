@@ -5,6 +5,8 @@ import { debounce } from "../helpers/SearchData";
 import { Link } from "react-router-dom";
 import reducer from "../helpers/EnqAction";
 import BeatLoader from "react-spinners/BeatLoader";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const initialState = {
   data: [],
@@ -36,7 +38,6 @@ function Enquiries() {
     );
 
     const responseEnq = await requestEnq.json();
-    console.log(responseEnq);
     dispatch({ type: "SET_DATA", payload: responseEnq.results });
     dispatch({ type: "SET_TOTAL_DATA", payload: responseEnq.count });
     dispatch({ type: "LOADING", payload: false });
@@ -55,6 +56,24 @@ function Enquiries() {
     dispatch({ type: "SET_PER_PAGE", payload: newPerPage });
     dispatch({ type: "SET_PAGE_NO", payload: page });
     dispatch({ type: "LOADING", payload: true });
+  };
+
+  const deleteData = async function (id) {
+    fetch(
+      `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localData.token.access}`,
+        },
+      }
+    )
+      .then(() => {
+        loadData();
+      })
+      .catch((err) => console.log(err.message));
   };
 
   const columns = [
@@ -89,35 +108,36 @@ function Enquiries() {
       name: "Status",
       selector: (row) => row.enquiry_status?.status,
     },
+    {
+      name: "edit",
+      selector: null,
+      cell: (row) => [
+        <EditIcon />,
+        <DeleteIcon className="cursor-pointer" onClick={deleteData.bind(null, row.id)} />,
+      ],
+    },
   ];
 
-  // if (loading) {
-  //   return (
-  //     <Stack
-  //       spacing={1}
-  //       sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-  //     >
-  //       <Skeleton
-  //         variant="circular"
-  //         width={50}
-  //         height={50}
-  //         sx={{ bgcolor: "grey.500" }}
-  //       />
-  //       <Skeleton
-  //         variant="rectangular"
-  //         width={500}
-  //         height={100}
-  //         sx={{ bgcolor: "grey.500" }}
-  //       />
-  //       <Skeleton
-  //         variant="rounded"
-  //         width={500}
-  //         height={100}
-  //         sx={{ bgcolor: "grey.500" }}
-  //       />
-  //     </Stack>
-  //   );
-  // }
+  const customStyles = {
+    rows: {
+      style: {
+        minHeight: "72px",
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+        backgroundColor: "#e5e7eb",
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+      },
+    },
+  };
   return (
     <div>
       <SearchField
@@ -140,6 +160,8 @@ function Enquiries() {
         onChangeRowsPerPage={handlePerRowsChange}
         onChangePage={handlePageChange}
         progressComponent={<BeatLoader color="#998f8f" size={25} />}
+        customStyles={customStyles}
+        highlightOnHover
       />
     </div>
   );
