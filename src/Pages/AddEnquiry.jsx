@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Country, State, City } from "country-state-city";
+import FetchData from "../Common/FetchData";
 
 function AddEnquiry() {
   const [formValue, setFormValue] = useState({
@@ -63,26 +64,11 @@ function AddEnquiry() {
 
     console.log(reqBody);
 
-    try {
-      const req = await fetch(
-        "https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/add-enquiry/",
-        {
-          method: "POST",
-          body: JSON.stringify(reqBody),
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localData.token.access}`,
-          },
-        }
-      );
-
-      const responseData = await req.json();
-
-      console.log("response", responseData);
-    } catch (error) {
-      console.log(error);
-    }
+    await FetchData(
+      `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/add-enquiry/`,
+      "POST",
+      reqBody
+    );
   };
 
   return (
@@ -155,7 +141,7 @@ function AddEnquiry() {
                 >
                   <option>Select Country</option>
                   {countryData.map((country, index) => (
-                    <option key={index} value={country.isoCode}>
+                    <option key={index} value={country.name}>
                       {country.name}
                     </option>
                   ))}
@@ -348,7 +334,7 @@ function AddEnquiry() {
                 >
                   <option>Select State</option>
                   {stateValue.map((data, index) => (
-                    <option key={index} value={data.isoCode}>
+                    <option key={index} value={data.name}>
                       {data.name}
                     </option>
                   ))}

@@ -7,6 +7,7 @@ import reducer from "../helpers/EnqAction";
 import BeatLoader from "react-spinners/BeatLoader";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FetchData from "../Common/FetchData";
 
 const initialState = {
   data: [],
@@ -21,23 +22,15 @@ function Enquiries() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const debounceFunction = useRef(debounce(dispatch));
 
-  let localData = localStorage.getItem("loginInfo");
-  if (localData) localData = JSON.parse(localData);
+  // let localData = localStorage.getItem("loginInfo");
+  // if (localData) localData = JSON.parse(localData);
 
   const loadData = async function () {
-    const requestEnq = await fetch(
+    const responseEnq = await FetchData(
       `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/?p=${state.pageNo}&records=${state.perPage}&search=${state.searchInput}`,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localData.token.access}`,
-        },
-      }
+      "GET"
     );
 
-    const responseEnq = await requestEnq.json();
     dispatch({ type: "SET_DATA", payload: responseEnq.results });
     dispatch({ type: "SET_TOTAL_DATA", payload: responseEnq.count });
     dispatch({ type: "LOADING", payload: false });
@@ -59,21 +52,12 @@ function Enquiries() {
   };
 
   const deleteData = async function (id) {
-    fetch(
+    await FetchData(
       `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localData.token.access}`,
-        },
-      }
-    )
-      .then(() => {
-        loadData();
-      })
-      .catch((err) => console.log(err.message));
+      "DELETE"
+    );
+
+    await loadData();
   };
 
   const columns = [
@@ -105,15 +89,18 @@ function Enquiries() {
       selector: (row) => row.current_education?.current_education,
     },
     {
-      name: "Status",
-      selector: (row) => row.enquiry_status?.status,
+      name: "Married",
+      selector: (row) => row.married?.status,
     },
     {
       name: "edit",
       selector: null,
       cell: (row) => [
         <EditIcon />,
-        <DeleteIcon className="cursor-pointer" onClick={deleteData.bind(null, row.id)} />,
+        <DeleteIcon
+          className="cursor-pointer"
+          onClick={deleteData.bind(null, row.id)}
+        />,
       ],
     },
   ];
