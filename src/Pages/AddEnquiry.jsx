@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Country, State, City } from "country-state-city";
+import React, { useEffect, useState } from "react";
+import { State, City } from "country-state-city";
 import FetchData from "../Common/FetchData";
 
 function AddEnquiry() {
@@ -22,24 +22,36 @@ function AddEnquiry() {
     // documents: "",
   });
 
+  const [selectOption, setSelectOption] = useState({
+    currentEducation: [],
+    countryData: [],
+  });
+
+  const apiEndpoint = async function () {
+    const currentEducation = await FetchData(
+      `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/currenteducation/`,
+      "GET"
+    );
+    setSelectOption((prevState) => ({ ...prevState, currentEducation }));
+
+    const countryData = await FetchData(
+      `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/countries/`,
+      "GET"
+    );
+    setSelectOption((prevState) => ({ ...prevState, countryData }));
+  };
+
+  useEffect(() => {
+    apiEndpoint();
+  }, []);
+
   let localData = localStorage.getItem("loginInfo");
   if (localData) localData = JSON.parse(localData);
 
-  // get all country data
-  const countryData = Country.getAllCountries();
-
   // get all state data
   const stateData = State.getAllStates();
-
+  
   const [stateValue, setStateValue] = useState(stateData);
-
-  const handleCountryData = function (e) {
-    setFormValue({ ...formValue, country: e.target.value });
-    const filteredState = stateData.filter(
-      (data) => data.isoCode === e.target.value
-    );
-    setStateValue(filteredState);
-  };
 
   const handleSubmit = async function (e) {
     e.preventDefault();
@@ -56,13 +68,11 @@ function AddEnquiry() {
       nationality: formValue.nationality,
       married: formValue.married,
       dob: formValue.birthDate,
-      current_education: formValue.education,
+      current_education: formValue.current_education,
       country_interested: formValue.countryInterested,
       visa_refusal: formValue.visa,
       // visa_file: formValue.documents,
     };
-
-    console.log(reqBody);
 
     await FetchData(
       `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/add-enquiry/`,
@@ -137,12 +147,14 @@ function AddEnquiry() {
                   autoComplete="country-name"
                   value={formValue.country}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                  onChange={handleCountryData}
+                  onChange={(e) =>
+                    setFormValue({ ...formValue, country: e.target.value })
+                  }
                 >
                   <option>Select Country</option>
-                  {countryData.map((country, index) => (
-                    <option key={index} value={country.name}>
-                      {country.name}
+                  {selectOption.countryData.map((country) => (
+                    <option key={country.id} value={country.country_name}>
+                      {country.country_name}
                     </option>
                   ))}
                 </select>
@@ -227,7 +239,7 @@ function AddEnquiry() {
                   id="current_education"
                   name="current_education"
                   autoComplete="current_education"
-                  value={formValue.current_education}
+                  // value={formValue.current_education}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   onChange={(e) =>
                     setFormValue({
@@ -236,10 +248,12 @@ function AddEnquiry() {
                     })
                   }
                 >
-                  <option value="">Select Country</option>
-                  <option value="1">B.com</option>
-                  <option value="2">M.com</option>
-                  {/* Add more countries as needed */}
+                  <option value="">Current Education</option>
+                  {selectOption.currentEducation.map((education) => (
+                    <option key={education.id} value={education.id}>
+                      {education.current_education}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -382,8 +396,8 @@ function AddEnquiry() {
                     setFormValue({ ...formValue, married: e.target.value })
                   }
                 >
-                  <option value="False">Yes</option>
-                  <option value="True">no</option>
+                  <option value="True">Yes</option>
+                  <option value="False">no</option>
                 </select>
               </div>
             </div>

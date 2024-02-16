@@ -22,14 +22,20 @@ function Enquiries() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const debounceFunction = useRef(debounce(dispatch));
 
-  // let localData = localStorage.getItem("loginInfo");
-  // if (localData) localData = JSON.parse(localData);
-
   const loadData = async function () {
     const responseEnq = await FetchData(
       `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/?p=${state.pageNo}&records=${state.perPage}&search=${state.searchInput}`,
       "GET"
     );
+
+    console.log(
+      await FetchData(
+        `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/?p=${state.pageNo}&records=${state.perPage}&search=${state.searchInput}`,
+        "GET"
+      )
+    );
+
+    console.log("Load Data", responseEnq);
 
     dispatch({ type: "SET_DATA", payload: responseEnq.results });
     dispatch({ type: "SET_TOTAL_DATA", payload: responseEnq.count });
@@ -90,7 +96,11 @@ function Enquiries() {
     },
     {
       name: "Married",
-      selector: (row) => row.married?.status,
+      selector: (row) => (row.married ? "Yes" : "No"),
+    },
+    {
+      name: "Country",
+      selector: (row) => row.country,
     },
     {
       name: "edit",

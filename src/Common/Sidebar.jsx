@@ -102,16 +102,16 @@ export default function Sidebar() {
           </ListItemButton>
           <Collapse in={openMenu.enquiries} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
-                <Link to="/enquiries">
+              <Link to="/enquiries">
+                <ListItemButton sx={{ pl: 4 }}>
                   <ListItemText primary="All Enquiries" className="pl-3.5" />
-                </Link>
-              </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }}>
-                <Link to="/add-enquiries">
+                </ListItemButton>
+              </Link>
+              <Link to="/add-enquiries">
+                <ListItemButton sx={{ pl: 4 }}>
                   <ListItemText primary="Create Enquiries" className="pl-3.5" />
-                </Link>
-              </ListItemButton>
+                </ListItemButton>
+              </Link>
             </List>
           </Collapse>
 
