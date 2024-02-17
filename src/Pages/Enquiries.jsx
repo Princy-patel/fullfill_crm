@@ -107,6 +107,10 @@ function Enquiries() {
       selector: (row) => row.state,
     },
     {
+      name: "City",
+      selector: (row) => row.city,
+    },
+    {
       name: "edit",
       selector: null,
       cell: (row) => [

@@ -57,7 +57,12 @@ function AddEnquiry() {
   const getCities = City.getAllCities();
 
   const handleCountryData = function (e) {
-    setFormValue({ ...formValue, country: e.target.value });
+    const countryCode = e.target.value;
+    const countryName = getCountries.find(
+      (country) => country.isoCode === countryCode
+    )?.name;
+
+    setFormValue({ ...formValue, country: countryName });
 
     const stateDataOfCountry = State.getStatesOfCountry(e.target.value);
 
@@ -68,7 +73,11 @@ function AddEnquiry() {
   };
 
   const handleStateData = function (e) {
-    setFormValue({ ...formValue, state: e.target.value });
+    const stateCode = e.target.value;
+    const stateName = selectOption.stateData.find(
+      (state) => state.isoCode === stateCode
+    )?.name;
+    setFormValue({ ...formValue, state: stateName });
 
     const cityOfState = getCities.filter(
       (city) => city.stateCode === e.target.value
