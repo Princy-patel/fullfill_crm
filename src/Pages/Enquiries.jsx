@@ -103,6 +103,10 @@ function Enquiries() {
       selector: (row) => row.country,
     },
     {
+      name: "State",
+      selector: (row) => row.state,
+    },
+    {
       name: "edit",
       selector: null,
       cell: (row) => [

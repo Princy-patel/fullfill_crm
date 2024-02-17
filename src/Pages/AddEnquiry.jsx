@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { State, City } from "country-state-city";
+import { Country, State, City } from "country-state-city";
 import FetchData from "../Common/FetchData";
 
 function AddEnquiry() {
@@ -24,7 +24,9 @@ function AddEnquiry() {
 
   const [selectOption, setSelectOption] = useState({
     currentEducation: [],
-    countryData: [],
+    interestedCountry: [],
+    stateData: [],
+    cityData: [],
   });
 
   const apiEndpoint = async function () {
@@ -34,11 +36,11 @@ function AddEnquiry() {
     );
     setSelectOption((prevState) => ({ ...prevState, currentEducation }));
 
-    const countryData = await FetchData(
+    const interestedCountry = await FetchData(
       `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/countries/`,
       "GET"
     );
-    setSelectOption((prevState) => ({ ...prevState, countryData }));
+    setSelectOption((prevState) => ({ ...prevState, interestedCountry }));
   };
 
   useEffect(() => {
@@ -48,10 +50,35 @@ function AddEnquiry() {
   let localData = localStorage.getItem("loginInfo");
   if (localData) localData = JSON.parse(localData);
 
-  // get all state data
-  const stateData = State.getAllStates();
-  
-  const [stateValue, setStateValue] = useState(stateData);
+  // get country data
+  const getCountries = Country.getAllCountries();
+
+  // get cities data
+  const getCities = City.getAllCities();
+
+  const handleCountryData = function (e) {
+    setFormValue({ ...formValue, country: e.target.value });
+
+    const stateDataOfCountry = State.getStatesOfCountry(e.target.value);
+
+    setSelectOption((prevState) => ({
+      ...prevState,
+      stateData: stateDataOfCountry,
+    }));
+  };
+
+  const handleStateData = function (e) {
+    setFormValue({ ...formValue, state: e.target.value });
+
+    const cityOfState = getCities.filter(
+      (city) => city.stateCode === e.target.value
+    );
+
+    setSelectOption((prevState) => ({
+      ...prevState,
+      cityData: cityOfState,
+    }));
+  };
 
   const handleSubmit = async function (e) {
     e.preventDefault();
@@ -145,16 +172,13 @@ function AddEnquiry() {
                   id="country"
                   name="country"
                   autoComplete="country-name"
-                  value={formValue.country}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                  onChange={(e) =>
-                    setFormValue({ ...formValue, country: e.target.value })
-                  }
+                  onChange={handleCountryData}
                 >
                   <option>Select Country</option>
-                  {selectOption.countryData.map((country) => (
-                    <option key={country.id} value={country.country_name}>
-                      {country.country_name}
+                  {getCountries.map((country, index) => (
+                    <option key={index} value={country.isoCode}>
+                      {country.name}
                     </option>
                   ))}
                 </select>
@@ -169,17 +193,22 @@ function AddEnquiry() {
                 City
               </label>
               <div className="mt-2">
-                <input
-                  type="text"
-                  name="city"
-                  id="city"
-                  autoComplete="address-level2"
-                  value={formValue.city}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                <select
+                  id="country"
+                  name="country"
+                  autoComplete="country-name"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   onChange={(e) =>
                     setFormValue({ ...formValue, city: e.target.value })
                   }
-                />
+                >
+                  <option>Select City</option>
+                  {selectOption.cityData.map((city) => (
+                    <option key={city.isoCode} value={city.isoCode}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -239,7 +268,6 @@ function AddEnquiry() {
                   id="current_education"
                   name="current_education"
                   autoComplete="current_education"
-                  // value={formValue.current_education}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   onChange={(e) =>
                     setFormValue({
@@ -340,15 +368,12 @@ function AddEnquiry() {
                   id="state"
                   name="state"
                   autoComplete="state-name"
-                  value={formValue.state}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                  onChange={(e) =>
-                    setFormValue({ ...formValue, state: e.target.value })
-                  }
+                  onChange={handleStateData}
                 >
                   <option>Select State</option>
-                  {stateValue.map((data, index) => (
-                    <option key={index} value={data.name}>
+                  {selectOption.stateData.map((data, index) => (
+                    <option key={index} value={data.isoCode}>
                       {data.name}
                     </option>
                   ))}
@@ -436,7 +461,6 @@ function AddEnquiry() {
                   id="country-interested"
                   name="country-interested"
                   autoComplete="country-interested"
-                  value={formValue.countryInterested}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   onChange={(e) =>
                     setFormValue({
@@ -446,10 +470,11 @@ function AddEnquiry() {
                   }
                 >
                   <option value="">Select Country</option>
-                  <option value="1">Canada</option>
-                  <option value="2">UK</option>
-                  <option value="2">US</option>
-                  {/* Add more countries as needed */}
+                  {selectOption.interestedCountry.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.country_name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
