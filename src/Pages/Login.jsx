@@ -66,7 +66,7 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // dispatch({ type: "DISABLE_BUTTON", payload: true });
+    dispatch({ type: "DISABLE_BUTTON", payload: true });
 
     const reqBody = {
       username: formData.username,
@@ -91,7 +91,6 @@ export default function Login() {
     } else {
       setSnack({ open: true, message: "Please fill the form" });
       return;
-      // dispatch({ type: "ENABLE_BUTTON", payload: false });
     }
 
     let loginInfo = localStorage.getItem("loginInfo");
@@ -203,7 +202,7 @@ export default function Login() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                // disabled={formData.isDisabled}
+                disabled={formData.isDisabled}
               >
                 Sign In
               </Button>

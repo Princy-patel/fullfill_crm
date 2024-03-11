@@ -3,6 +3,7 @@ import DataTable from "react-data-table-component";
 import SearchField from "../Common/SearchField";
 import { debounce } from "../helpers/SearchData";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import reducer from "../helpers/EnqAction";
 import BeatLoader from "react-spinners/BeatLoader";
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,21 +22,13 @@ const initialState = {
 function Enquiries() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const debounceFunction = useRef(debounce(dispatch));
+  const navigate = useNavigate();
 
   const loadData = async function () {
     const responseEnq = await FetchData(
       `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/?p=${state.pageNo}&records=${state.perPage}&search=${state.searchInput}`,
       "GET"
     );
-
-    console.log(
-      await FetchData(
-        `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/?p=${state.pageNo}&records=${state.perPage}&search=${state.searchInput}`,
-        "GET"
-      )
-    );
-
-    console.log("Load Data", responseEnq);
 
     dispatch({ type: "SET_DATA", payload: responseEnq.results });
     dispatch({ type: "SET_TOTAL_DATA", payload: responseEnq.count });
@@ -64,6 +57,14 @@ function Enquiries() {
     );
 
     await loadData();
+  };
+
+  const editData = async function (id) {
+    await FetchData(
+      `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/${id}`,
+      "GET"
+    );
+    navigate(`/add-enquiries/${id}`);
   };
 
   const columns = [
@@ -111,10 +112,37 @@ function Enquiries() {
       selector: (row) => row.city,
     },
     {
+      name: "Passport Number",
+      selector: (row) => row.passport_number,
+    },
+    {
+      name: "Visa Refusal",
+      selector: (row) => (row.visa_refusal ? "Yes" : "No"),
+    },
+    {
+      name: "Phone No.",
+      selector: (row) => row.student_phone,
+    },
+    {
+      name: "Zipcode",
+      selector: (row) => row.zipcode,
+    },
+    {
+      name: "Date of birth",
+      selector: (row) => row.dob,
+    },
+    {
+      name: "Country Interest",
+      selector: (row) => row.country_interested?.country_name,
+    },
+    {
       name: "edit",
       selector: null,
       cell: (row) => [
-        <EditIcon />,
+        <EditIcon
+          className="cursor-pointer"
+          onClick={editData.bind(null, row.id)}
+        />,
         <DeleteIcon
           className="cursor-pointer"
           onClick={deleteData.bind(null, row.id)}

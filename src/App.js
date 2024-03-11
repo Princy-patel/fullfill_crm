@@ -31,6 +31,10 @@ const router = createBrowserRouter([
         path: "/add-enquiries",
         element: <AddEnquiry />,
       },
+      {
+        path: "/add-enquiries/:studentId",
+        element: <AddEnquiry />,
+      },
     ],
   },
   {
