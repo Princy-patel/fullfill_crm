@@ -12,6 +12,7 @@ function AddEnquiry() {
     country: "",
     countryIso: "",
     state: "",
+    stateIso: "",
     city: "",
     zip: "",
     passport: "",
@@ -20,7 +21,7 @@ function AddEnquiry() {
     birthDate: "",
     current_education: "",
     countryInterested: "",
-    visa: "",
+    visa: true,
     // documents: "",
   });
 
@@ -54,6 +55,7 @@ function AddEnquiry() {
         country,
         countryIso,
         state,
+        stateIso,
         city,
         zipcode,
         passport_number,
@@ -64,7 +66,7 @@ function AddEnquiry() {
         country_interested,
       } = getAllData;
 
-      setFormValue({
+            setFormValue({
         ...formValue,
         name: student_name,
         phone: student_phone,
@@ -73,6 +75,7 @@ function AddEnquiry() {
         country: country,
         countryIso: countryIso,
         state: state,
+        stateIso: stateIso,
         city: city,
         zip: zipcode,
         passport: passport_number,
@@ -187,12 +190,17 @@ function AddEnquiry() {
   const handleCountryData = function (e) {
     const countryCode = e.target.value;
 
+    const countryName = getCountries.find(
+      (country) => country.isoCode === countryCode
+    )?.name;
+
     setFormValue({
       ...formValue,
       countryIso: countryCode,
+      country: countryName,
     });
 
-    const stateDataOfCountry = State.getStatesOfCountry(e.target.value);
+    const stateDataOfCountry = State.getStatesOfCountry(countryCode);
 
     setSelectOption((prevState) => ({
       ...prevState,
@@ -205,7 +213,8 @@ function AddEnquiry() {
     const stateName = selectOption.stateData.find(
       (state) => state.isoCode === stateCode
     )?.name;
-    setFormValue({ ...formValue, state: stateName });
+
+    setFormValue({ ...formValue, state: stateName, stateIso: stateCode });
 
     const cityOfState = getCities.filter(
       (city) => city.stateCode === e.target.value
@@ -228,6 +237,7 @@ function AddEnquiry() {
       country,
       countryIso,
       state,
+      stateIso,
       city,
       zip,
       passport,
@@ -247,6 +257,7 @@ function AddEnquiry() {
       country: country,
       countryIso: countryIso,
       state: state,
+      stateIso: stateIso,
       city: city,
       zipcode: zip,
       passport_number: passport,
@@ -336,9 +347,9 @@ function AddEnquiry() {
                     value={formValue?.countryIso}
                   >
                     <option value="">Select Country</option>
-                    {getCountries.map((country) => (
+                    {getCountries.map((country, index) => (
                       <option
-                        key={country?.phonecode}
+                        key={index}
                         label={country.name}
                         value={country.isoCode}
                       >
@@ -476,8 +487,8 @@ function AddEnquiry() {
                       setFormValue({ ...formValue, visa: e.target.value })
                     }
                   >
-                    <option value={true}>Yes</option>
-                    <option value={false}>No</option>
+                    <option value="True">Yes</option>
+                    <option value="False">no</option>
                   </select>
                 </div>
               </div>
@@ -542,10 +553,15 @@ function AddEnquiry() {
                     autoComplete="state-name"
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                     onChange={handleStateData}
+                    value={formValue?.stateIso}
                   >
                     <option>Select State</option>
                     {selectOption.stateData.map((data, index) => (
-                      <option key={index} value={data.isoCode}>
+                      <option
+                        key={index}
+                        value={data.isoCode}
+                        label={data.name}
+                      >
                         {data.name}
                       </option>
                     ))}
