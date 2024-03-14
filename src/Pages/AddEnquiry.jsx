@@ -10,6 +10,7 @@ function AddEnquiry() {
     email: "",
     address: "",
     country: "",
+    countryIso: "",
     state: "",
     city: "",
     zip: "",
@@ -30,7 +31,11 @@ function AddEnquiry() {
     cityData: [],
   });
 
-  const [selectedCountry, setSelectedCountry] = useState()
+  // get country data
+  const getCountries = Country.getAllCountries();
+
+  // get cities data
+  const getCities = City.getAllCities();
 
   const getId = useParams().studentId;
 
@@ -47,6 +52,7 @@ function AddEnquiry() {
         student_email,
         student_address,
         country,
+        countryIso,
         state,
         city,
         zipcode,
@@ -65,6 +71,7 @@ function AddEnquiry() {
         email: student_email,
         address: student_address,
         country: country,
+        countryIso: countryIso,
         state: state,
         city: city,
         zip: zipcode,
@@ -77,7 +84,6 @@ function AddEnquiry() {
       });
     }
   };
-
   useEffect(() => {
     updateData();
   }, [getId]);
@@ -178,19 +184,13 @@ function AddEnquiry() {
   let localData = localStorage.getItem("loginInfo");
   if (localData) localData = JSON.parse(localData);
 
-  // get country data
-  const getCountries = Country.getAllCountries();
-
-  // get cities data
-  const getCities = City.getAllCities();
-
   const handleCountryData = function (e) {
     const countryCode = e.target.value;
-    // const countryName = getCountries.find(
-    //   (country) => country.isoCode === countryCode
-    // )?.name;
 
-    setFormValue({ ...formValue, country: countryCode });
+    setFormValue({
+      ...formValue,
+      countryIso: countryCode,
+    });
 
     const stateDataOfCountry = State.getStatesOfCountry(e.target.value);
 
@@ -226,6 +226,7 @@ function AddEnquiry() {
       email,
       address,
       country,
+      countryIso,
       state,
       city,
       zip,
@@ -244,6 +245,7 @@ function AddEnquiry() {
       student_email: email,
       student_address: address,
       country: country,
+      countryIso: countryIso,
       state: state,
       city: city,
       zipcode: zip,
@@ -331,12 +333,12 @@ function AddEnquiry() {
                     autoComplete="country-name"
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                     onChange={handleCountryData}
-                    value={formValue.country}
+                    value={formValue?.countryIso}
                   >
                     <option value="">Select Country</option>
                     {getCountries.map((country) => (
                       <option
-                        key={country.isoCode}
+                        key={country?.phonecode}
                         label={country.name}
                         value={country.isoCode}
                       >
