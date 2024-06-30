@@ -14,6 +14,7 @@ function AddEnquiry() {
     state: "",
     stateIso: "",
     city: "",
+    cityIso: "",
     zip: "",
     passport: "",
     nationality: "",
@@ -57,6 +58,7 @@ function AddEnquiry() {
         state,
         stateIso,
         city,
+        cityIso,
         zipcode,
         passport_number,
         nationality,
@@ -66,7 +68,7 @@ function AddEnquiry() {
         country_interested,
       } = getAllData;
 
-            setFormValue({
+      setFormValue({
         ...formValue,
         name: student_name,
         phone: student_phone,
@@ -77,6 +79,7 @@ function AddEnquiry() {
         state: state,
         stateIso: stateIso,
         city: city,
+        cityIso: cityIso,
         zip: zipcode,
         passport: passport_number,
         nationality: nationality,
@@ -85,6 +88,8 @@ function AddEnquiry() {
         current_education: current_education,
         countryInterested: country_interested,
       });
+
+      console.log("getAllData", getAllData);
     }
   };
   useEffect(() => {
@@ -98,8 +103,11 @@ function AddEnquiry() {
       email,
       address,
       country,
+      countryIso,
       state,
+      stateIso,
       city,
+      cityIso,
       zip,
       passport,
       nationality,
@@ -110,39 +118,49 @@ function AddEnquiry() {
       visa,
     } = formValue;
 
+    console.log("update", formValue);
+
     // need to add through object and pass as a object
     const updatedBodyData = {
-      added_by: {
-        username: "kldjfklds",
-      },
       application: [],
-      assigned_users: {
-        username: "kldjfklds",
-      },
-      enquiry_status: {
-        status: "waiting",
-      },
+      added_by: { username: "Hello" },
+      assigned_users: { username: "Admin" },
+      enquiry_status: { status: "lkdj" },
       student_name: name,
       student_phone: phone,
       student_email: email,
       student_address: address,
       country: country,
+      countryIso: countryIso,
       state: state,
+      stateIso: stateIso,
       city: city,
+      cityIso: cityIso,
       zipcode: zip,
       passport_number: passport,
       nationality: nationality,
       married: married,
       dob: birthDate,
       current_education: {
-        current_education,
+        id: current_education.id,
+        current_education: formValue?.current_education?.current_education,
       },
       country_interested: {
-        country_name: countryInterested,
+        id: countryInterested.id,
+        country_name: countryInterested.country_name,
       },
-      visa_refusal: visa,
+      visa: visa,
       // visa_file: formValue.documents,
     };
+
+    console.log("UpdatedBody", JSON.stringify(updatedBodyData));
+
+    try {
+      const jsonString = JSON.stringify(updatedBodyData);
+      console.log("JSON String:", jsonString);
+    } catch (error) {
+      console.log("Error while stringifying JSON:", error);
+    }
 
     const editRequestData = await fetch(
       `https://fulfilurdream.howtogetridofspiderveins.net/fulfillDream/api/enquiries/${getId}/`,
@@ -156,6 +174,13 @@ function AddEnquiry() {
         },
       }
     );
+
+    if (!editRequestData.ok) {
+      // If response is not OK, log the status text and response
+      const errorText = await editRequestData.text();
+      console.log("Error response text:", errorText);
+      // throw new Error(editRequestData.statusText);
+    }
 
     try {
       const responseData = await editRequestData.json();
@@ -379,7 +404,11 @@ function AddEnquiry() {
                   >
                     <option>Select City</option>
                     {selectOption.cityData.map((city, index) => (
-                      <option key={index} value={city.isoCode}>
+                      <option
+                        key={index}
+                        value={city.isoCode}
+                        label={city.name}
+                      >
                         {city.name}
                       </option>
                     ))}
